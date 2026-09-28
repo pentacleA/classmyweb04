@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기의 이용 빙고</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --bg: #0e1b2b;
+    --bg-soft: #16283d;
+    --card: #1d3552;
+    --card-line: rgba(238,243,248,0.14);
+    --ink: #eef3f8;
+    --ink-dim: #9fb0c3;
+    --primary: #ffd23f;
+    --primary-deep: #d99e00;
+    --accent: #57c2ff;
+    --good: #7ce38b;
+    --bad: #ff6f6f;
+    --shadow: rgba(0,0,0,0.35);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #eef2f6;
+      --bg-soft: #e2e9f0;
+      --card: #ffffff;
+      --card-line: rgba(20,30,45,0.15);
+      --ink: #16243a;
+      --ink-dim: #556579;
+      --primary: #c98c00;
+      --primary-deep: #9c6c00;
+      --accent: #0d84c4;
+      --good: #1f9e4c;
+      --bad: #c73b3b;
+      --shadow: rgba(0,0,0,0.1);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #eef2f6; --bg-soft: #e2e9f0; --card: #ffffff; --card-line: rgba(20,30,45,0.15);
+    --ink: #16243a; --ink-dim: #556579; --primary: #c98c00; --primary-deep: #9c6c00;
+    --accent: #0d84c4; --good: #1f9e4c; --bad: #c73b3b; --shadow: rgba(0,0,0,0.1);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1b2b; --bg-soft: #16283d; --card: #1d3552; --card-line: rgba(238,243,248,0.14);
+    --ink: #eef3f8; --ink-dim: #9fb0c3; --primary: #ffd23f; --primary-deep: #d99e00;
+    --accent: #57c2ff; --good: #7ce38b; --bad: #ff6f6f; --shadow: rgba(0,0,0,0.35);
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+    line-height: 1.5;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 18px calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+
+  header.hero {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  header.hero .kicker {
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin: 0 0 6px;
+  }
+  header.hero h1 {
+    font-family: 'Jua', 'Gowun Dodum', sans-serif;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    margin: 0 0 8px;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+  }
+  header.hero p {
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  nav.steps {
+    display: flex;
+    gap: 8px;
+    background: var(--bg-soft);
+    padding: 6px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+  }
+  nav.steps button {
+    flex: 1;
+    padding: 12px 6px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  nav.steps button.active {
+    background: var(--primary);
+    color: #241900;
+    font-weight: bold;
+  }
+  nav.steps button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  nav.steps button:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  .chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn .35s ease; }
+  @media (prefers-reduced-motion: reduce) {
+    .panel.active { animation: none; }
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform:none; } }
+
+  .note {
+    background: var(--bg-soft);
+    border: 1px solid var(--card-line);
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+    margin-bottom: 18px;
+  }
+
+  .progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 0.92rem;
+    color: var(--ink-dim);
+  }
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--primary));
+    width: 0%;
+    transition: width .3s ease;
+  }
+
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+  }
+  .quiz-card {
+    background: var(--card);
+    border: 2px solid var(--card-line);
+    border-radius: 16px;
+    padding: 14px 14px 12px;
+    transition: border-color .2s, background .2s;
+  }
+  .quiz-card.correct { border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--card)); }
+  .quiz-card.incorrect { border-color: var(--bad); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .page-tag {
+    font-size: 0.72rem;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 2px 9px;
+  }
+  .idx-tag { font-size: 0.72rem; color: var(--ink-dim); }
+
+  .consonant {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.3rem;
+    color: var(--primary);
+    margin: 4px 0 10px;
+    letter-spacing: 1px;
+    word-break: keep-all;
+  }
+
+  .answer-row { display: flex; gap: 6px; }
+  .answer-input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--card-line);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.92rem;
+  }
+  .check-btn {
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #05202f;
+    padding: 0 14px;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    min-height: 20px;
+  }
+  .result-text { font-size: 0.85rem; }
+  .result-text.correct { color: var(--good); }
+  .result-text.incorrect { color: var(--bad); }
+
+  .quiz-actions {
+    display: flex;
+    justify-content: center;
+    margin: 22px 0 4px;
+  }
+
+  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 22px; }
+  .chip {
+    border: 1px solid var(--card-line);
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 9px 15px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background .15s, color .15s, transform .1s;
+  }
+  .chip.selected {
+    background: var(--primary);
+    border-color: var(--primary-deep);
+    color: #241900;
+    font-weight: bold;
+  }
+  .chip:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .bank-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .count-pill {
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+  .count-pill b { color: var(--primary); }
+
+  .primary-btn {
+    border: none;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #241900;
+    padding: 12px 22px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform .1s, background .2s;
+  }
+  .primary-btn:disabled { background: var(--bg-soft); color: var(--ink-dim); cursor: not-allowed; }
+  .primary-btn:not(:disabled):active { transform: scale(0.97); }
+
+  .ghost-btn {
+    border: 1px solid var(--card-line);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--ink);
+    padding: 11px 18px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .bingo-count {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.3rem;
+    color: var(--primary);
+  }
+  .bingo-count.pulse { animation: pop .5s ease; }
+  @media (prefers-reduced-motion: reduce) { .bingo-count.pulse { animation: none; } }
+  @keyframes pop { 0%{transform:scale(1);} 35%{transform:scale(1.18);} 100%{transform:scale(1);} }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 480px;
+    margin: 0 auto 20px;
+    aspect-ratio: 1;
+  }
+  .cell {
+    background: var(--card);
+    border: 2px solid var(--card-line);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px;
+    font-size: clamp(0.66rem, 2.4vw, 0.82rem);
+    cursor: pointer;
+    color: var(--ink);
+    word-break: keep-all;
+    transition: background .15s, transform .1s, border-color .15s;
+  }
+  .cell:active { transform: scale(0.95); }
+  .cell.marked {
+    background: linear-gradient(160deg, var(--primary), var(--primary-deep));
+    border-color: var(--primary-deep);
+    color: #241900;
+    font-weight: bold;
+  }
+  .cell.line-complete {
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+
+  .board-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .empty-hint {
+    text-align: center;
+    color: var(--ink-dim);
+    padding: 30px 10px;
+  }
+
+  footer.credits {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 0.78rem;
+    margin-top: 30px;
+  }
+
+  @media (max-width: 420px) {
+    .quiz-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <p class="kicker">6학년 과학 · 3단원 전기의 이용</p>
+    <h1>⚡ 전기의 이용 빙고</h1>
+    <p>초성 퀴즈로 개념 낱말을 찾고, 나만의 빙고판을 만들어 게임을 즐겨 보세요.</p>
+  </header>
+
+  <nav class="steps">
+    <button class="step-btn active" data-step="1">① 초성 퀴즈</button>
+    <button class="step-btn" data-step="2" disabled title="24문제를 모두 입력하면 열려요">② 빙고판 만들기</button>
+    <button class="step-btn" data-step="3" disabled title="24문제를 모두 입력하면 열려요">③ 빙고 게임</button>
+  </nav>
+
+  <!-- STEP 1 -->
+  <section class="panel active" id="panel-1">
+    <div class="note">교과서 3단원(60~76쪽)을 살펴보며 초성 힌트에 맞는 낱말을 입력해 보세요. 24문제를 모두 입력한 뒤 아래 버튼을 누르면 한 번에 정답을 확인할 수 있어요.</div>
+    <div class="progress-bar-wrap">
+      <span id="quiz-progress-text">0 / 24 입력 완료</span>
+      <div class="progress-bar"><div id="quiz-progress-fill"></div></div>
+    </div>
+    <div class="quiz-grid" id="quiz-grid"></div>
+    <div class="quiz-actions">
+      <button class="primary-btn" id="check-all-btn" disabled>전체 정답 확인하기</button>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" id="panel-2">
+    <div class="note">아래 낱말 카드 중 <b>16개</b>를 눌러 선택하면 4×4 빙고판에 무작위로 배치돼요. 정답을 못 찾은 낱말도 여기서 확인할 수 있어요.</div>
+    <div class="bank-actions">
+      <span class="count-pill"><b id="bank-count">0</b> / 16 선택됨</span>
+      <button class="primary-btn" id="make-board-btn" disabled>빙고판 만들기</button>
+    </div>
+    <div class="chip-list" id="chip-list"></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" id="panel-3">
+    <div class="note">칸을 눌러 낱말을 체크하세요. 가로·세로·대각선이 모두 채워지면 빙고 한 줄이 완성돼요.</div>
+    <div id="board-area"></div>
+  </section>
+
+  <footer class="credits">전기의 이용 초성 빙고 · 학습용 시뮬레이션</footer>
+</div>
+
+<script>
+(function () {
+  const DATA = [
+    { clue: "ㅈㅈ, ㅈㄱ, ㅈㅅ", page: 60, answer: "전지, 전구, 전선" },
+    { clue: "ㅈㄱ ㅂㅍ", page: 60, answer: "전기 부품" },
+    { clue: "ㅈㄱ ㅎㄹ", page: 60, answer: "전기 회로" },
+    { clue: "ㅈㄱㄱ ㅎㄹㅇ ㅎㄴㄷ", page: 61, answer: "전기가 흘러야 합니다" },
+    { clue: "ㅈㄱㄱ ㅎㄹㄴ", page: 61, answer: "전기가 흐르는" },
+    { clue: "ㄷㅊ", page: 61, answer: "도체" },
+    { clue: "ㅈㄱㄱ ㅈ ㅎㄹㅈ ㅇㄴ", page: 61, answer: "전기가 잘 흐르지 않는" },
+    { clue: "ㅂㄷㅊ", page: 61, answer: "부도체" },
+    { clue: "ㅈㄹㅇㄱ", page: 62, answer: "직렬연결" },
+    { clue: "ㅈㅈ ㄷ ㄱ", page: 62, answer: "전지 두 개" },
+    { clue: "ㄷ ㅂㅅㄴㄷ", page: 62, answer: "더 밝습니다" },
+    { clue: "ㅇㄱ ㅈㅅ", page: 64, answer: "영구 자석" },
+    { clue: "ㅈㅈㅅ", page: 64, answer: "전자석" },
+    { clue: "ㅇㄴㅁㅅ", page: 64, answer: "에나멜선" },
+    { clue: "ㅈㄱㄱ ㅎㄹ ㄸㅁ ㅈㅅㅇ ㅅㅈ", page: 66, answer: "전기가 흐를 때만 자석의 성질" },
+    { clue: "ㄱㅇ ㅂㄷㄹ ㅂㄲ ㅅ", page: 66, answer: "극을 반대로 바꿀 수" },
+    { clue: "ㅈㅈㅇ ㄱㅅ", page: 66, answer: "전지의 개수" },
+    { clue: "ㅈㅈㅇ ㅂㅎ", page: 66, answer: "전지의 방향" },
+    { clue: "ㅈㅈㅅ ㄱㅈㄱ", page: 69, answer: "전자석 기중기" },
+    { clue: "ㅎㅇㅈㅇㄱ ㅇㅈㅎㄱ", page: 70, answer: "효율적이고 안전하게" },
+    { clue: "ㅇㄴㅈ ㅅㅂ ㅎㅇ ㄷㄱ", page: 71, answer: "에너지 소비 효율 등급" },
+    { clue: "ㄱㅈ ㅅㄱㄴ ㅎㅈ", page: 71, answer: "감전 사고나 화재" },
+    { clue: "ㅇㅈ ㄷㄱ", page: 73, answer: "안전 덮개" },
+    { clue: "ㅅㅁㅌ ㅎ ㄱㅅ", page: 76, answer: "스마트 홈 기술" }
+  ];
+
+  const quizState = DATA.map(d => ({ ...d, status: "unanswered", filled: false }));
+  const cardRefs = [];
+  const selected = new Set();
+  let boardWords = [];
+  let markedCells = new Array(16).fill(false);
+
+  function normalize(s) {
+    return s.replace(/[\s,]/g, "");
+  }
+
+  // ---------- STEP NAV ----------
+  const stepBtns = document.querySelectorAll(".step-btn");
+  stepBtns.forEach(btn => {
+    btn.addEventListener("click", () => goToStep(parseInt(btn.dataset.step, 10)));
+  });
+  function goToStep(n) {
+    if (n >= 2 && !isQuizComplete()) return;
+    stepBtns.forEach(b => b.classList.toggle("active", parseInt(b.dataset.step, 10) === n));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    document.getElementById("panel-" + n).classList.add("active");
+    if (n === 2) renderBank();
+  }
+
+  function isQuizComplete() {
+    return quizState.every(q => q.status !== "unanswered");
+  }
+
+  function updateStepLocks() {
+    const unlocked = isQuizComplete();
+    document.querySelector('.step-btn[data-step="2"]').disabled = !unlocked;
+    document.querySelector('.step-btn[data-step="3"]').disabled = !unlocked;
+  }
+
+  // ---------- STEP 1: QUIZ ----------
+  const quizGrid = document.getElementById("quiz-grid");
+  const checkAllBtn = document.getElementById("check-all-btn");
+  checkAllBtn.addEventListener("click", checkAll);
+
+  function renderQuiz() {
+    quizGrid.innerHTML = "";
+    quizState.forEach((item, idx) => {
+      const card = document.createElement("div");
+      card.className = "quiz-card";
+      card.id = "qcard-" + idx;
+
+      const top = document.createElement("div");
+      top.className = "card-top";
+      top.innerHTML = `<span class="idx-tag">${idx + 1}번</span><span class="page-tag">${item.page}쪽</span>`;
+
+      const consonant = document.createElement("div");
+      consonant.className = "consonant";
+      consonant.textContent = item.clue;
+
+      const row = document.createElement("div");
+      row.className = "answer-row";
+      const input = document.createElement("input");
+      input.className = "answer-input";
+      input.type = "text";
+      input.placeholder = "정답을 입력하세요";
+      input.setAttribute("aria-label", (idx + 1) + "번 문제 정답 입력");
+      input.addEventListener("input", () => {
+        item.filled = input.value.trim().length > 0;
+        if (item.status !== "unanswered") {
+          item.status = "unanswered";
+          card.classList.remove("correct", "incorrect");
+          resultText.textContent = "";
+          resultText.className = "result-text";
+        }
+        updateQuizProgress();
+      });
+      row.appendChild(input);
+
+      const bottom = document.createElement("div");
+      bottom.className = "card-bottom";
+      const resultText = document.createElement("span");
+      resultText.className = "result-text";
+      bottom.appendChild(resultText);
+
+      card.appendChild(top);
+      card.appendChild(consonant);
+      card.appendChild(row);
+      card.appendChild(bottom);
+      quizGrid.appendChild(card);
+
+      cardRefs.push({ item, card, input, resultText });
+    });
+    updateQuizProgress();
+  }
+
+  function checkAll() {
+    const allFilled = quizState.every(q => q.filled);
+    if (!allFilled) return;
+    cardRefs.forEach(ref => {
+      const val = ref.input.value.trim();
+      const ok = normalize(val) === normalize(ref.item.answer);
+      ref.item.status = ok ? "correct" : "incorrect";
+      ref.card.classList.remove("correct", "incorrect");
+      ref.card.classList.add(ok ? "correct" : "incorrect");
+      ref.resultText.textContent = ok ? "정답이에요! 🎉" : "다시 생각해 볼까요? (정답: " + ref.item.answer + ")";
+      ref.resultText.className = "result-text " + (ok ? "correct" : "incorrect");
+    });
+    updateQuizProgress();
+  }
+
+  function updateQuizProgress() {
+    const filledCount = quizState.filter(q => q.filled).length;
+    const checkedCount = quizState.filter(q => q.status !== "unanswered").length;
+    const progressText = document.getElementById("quiz-progress-text");
+    if (checkedCount === 24) {
+      const correctCount = quizState.filter(q => q.status === "correct").length;
+      progressText.textContent = correctCount + " / 24 정답 (24 / 24 입력 완료)";
+    } else {
+      progressText.textContent = filledCount + " / 24 입력 완료";
+    }
+    document.getElementById("quiz-progress-fill").style.width = (filledCount / 24 * 100) + "%";
+    checkAllBtn.disabled = filledCount !== 24;
+    updateStepLocks();
+  }
+
+  // ---------- STEP 2: WORD BANK ----------
+  const chipList = document.getElementById("chip-list");
+  const bankCount = document.getElementById("bank-count");
+  const makeBoardBtn = document.getElementById("make-board-btn");
+
+  function renderBank() {
+    chipList.innerHTML = "";
+    quizState.forEach((item, idx) => {
+      const chip = document.createElement("button");
+      chip.className = "chip" + (selected.has(idx) ? " selected" : "");
+      chip.textContent = item.answer;
+      chip.disabled = !selected.has(idx) && selected.size >= 16;
+      chip.addEventListener("click", () => {
+        if (selected.has(idx)) selected.delete(idx);
+        else if (selected.size < 16) selected.add(idx);
+        renderBank();
+      });
+      chipList.appendChild(chip);
+    });
+    bankCount.textContent = selected.size;
+    makeBoardBtn.disabled = selected.size !== 16;
+  }
+
+  makeBoardBtn.addEventListener("click", () => {
+    boardWords = shuffle(Array.from(selected).map(idx => quizState[idx].answer));
+    markedCells = new Array(16).fill(false);
+    goToStep(3);
+    renderBoard();
+  });
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ---------- STEP 3: BINGO BOARD ----------
+  const boardArea = document.getElementById("board-area");
+  const LINES = [
+    [0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
+    [0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],
+    [0,5,10,15],[3,6,9,12]
+  ];
+
+  function renderBoard() {
+    if (boardWords.length !== 16) {
+      boardArea.innerHTML = '<div class="empty-hint">② 단계에서 16개의 낱말을 선택하면<br>여기에 빙고판이 만들어져요.</div>';
+      return;
+    }
+    boardArea.innerHTML = "";
+
+    const header = document.createElement("div");
+    header.className = "board-header";
+    const bingoLabel = document.createElement("div");
+    bingoLabel.className = "bingo-count";
+    bingoLabel.id = "bingo-count";
+    header.appendChild(bingoLabel);
+    boardArea.appendChild(header);
+
+    const board = document.createElement("div");
+    board.className = "board";
+    board.id = "board";
+    boardWords.forEach((word, i) => {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.textContent = word;
+      cell.tabIndex = 0;
+      cell.setAttribute("role", "button");
+      cell.addEventListener("click", () => toggleCell(i));
+      cell.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCell(i); }
+      });
+      board.appendChild(cell);
+    });
+    boardArea.appendChild(board);
+
+    const actions = document.createElement("div");
+    actions.className = "board-actions";
+    const shuffleBtn = document.createElement("button");
+    shuffleBtn.className = "ghost-btn";
+    shuffleBtn.textContent = "🔀 배치 다시 섞기";
+    shuffleBtn.addEventListener("click", () => {
+      boardWords = shuffle(boardWords);
+      markedCells = new Array(16).fill(false);
+      renderBoard();
+    });
+    const resetBtn = document.createElement("button");
+    resetBtn.className = "ghost-btn";
+    resetBtn.textContent = "🧹 체크 초기화";
+    resetBtn.addEventListener("click", () => {
+      markedCells = new Array(16).fill(false);
+      updateBoardUI(false);
+    });
+    actions.appendChild(shuffleBtn);
+    actions.appendChild(resetBtn);
+    boardArea.appendChild(actions);
+
+    updateBoardUI(false);
+  }
+
+  function toggleCell(i) {
+    markedCells[i] = !markedCells[i];
+    updateBoardUI(true);
+  }
+
+  function updateBoardUI(animate) {
+    const board = document.getElementById("board");
+    const cells = board.querySelectorAll(".cell");
+    let completedLines = 0;
+    const cellInLine = new Array(16).fill(false);
+
+    LINES.forEach(line => {
+      const complete = line.every(i => markedCells[i]);
+      if (complete) {
+        completedLines++;
+        line.forEach(i => { cellInLine[i] = true; });
+      }
+    });
+
+    cells.forEach((cell, i) => {
+      cell.classList.toggle("marked", markedCells[i]);
+      cell.classList.toggle("line-complete", cellInLine[i]);
+    });
+
+    const label = document.getElementById("bingo-count");
+    const prevCount = parseInt(label.dataset.count || "0", 10);
+    label.dataset.count = completedLines;
+    label.textContent = completedLines > 0 ? ("🎉 빙고 " + completedLines + "줄 완성!") : "아직 빙고 없음";
+    if (animate && completedLines > prevCount) {
+      label.classList.remove("pulse");
+      void label.offsetWidth;
+      label.classList.add("pulse");
+    }
+  }
+
+  renderQuiz();
+})();
+</script>
+</body>
+</html>
